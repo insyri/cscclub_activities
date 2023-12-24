@@ -6,7 +6,6 @@ linters:
   enable:
     - dupl
     - goconst
-    - gofmt
     - goimports
     - misspell
     - nilnil
