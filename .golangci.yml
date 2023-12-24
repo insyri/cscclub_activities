@@ -1,0 +1,15 @@
+run:
+  timeout: 3m
+issues:
+  fix: true
+linters:
+  enable:
+    - dupl
+    - goconst
+    - gofmt
+    - goimports
+    - misspell
+    - nilnil
+    - nosnakecase
+    - nonamedreturns
+    - revive
