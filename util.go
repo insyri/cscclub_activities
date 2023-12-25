@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fatih/color"
 	"os"
 	"runtime"
 )
@@ -15,4 +16,13 @@ func UserHomeDir() string {
 		return home
 	}
 	return os.Getenv("HOME")
+}
+
+// The color package also disables color output if the NO_COLOR environment variable is set to a non-empty string.
+// https://github.com/fatih/color?tab=readme-ov-file#disableenable-colorx
+
+func LogErrorAndExit(err error) {
+	c := color.New(color.FgRed).Add(color.Bold)
+	_, _ = c.Printf("Error: %v\n", err)
+	os.Exit(1)
 }

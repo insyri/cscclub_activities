@@ -1,54 +1,32 @@
 package main
 
-import (
-	"fmt"
-	"os"
-	"time"
-)
+import "fmt"
 
 func main() {
-	args := os.Args[1:]
-	if len(args) > 0 {
-		// compare
+	// commands during lesson
+	// stop -> clears checkpoint
+	// previous -> sets checkpoint to previous one + does thing
+	// help ->
 
-		f, err := GetFile()
-		if err != nil {
-			panic(err)
-		}
+	// active checkpoint? || stop || previous
 
-		defer func(f *os.File) {
-			err := f.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(f)
-
-		x, err := GetTime(f)
-		if err != nil {
-			panic(err)
-		}
-
-		then := time.Unix(x, 0)
-		result := time.Now().Sub(then)
-		fmt.Printf("%.3f", result.Seconds())
-	} else {
-		f, err := GetFile()
-		if err != nil {
-			panic(err)
-		}
-
-		defer func(f *os.File) {
-			err := f.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(f)
-
-		err = SaveTime(f)
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println("Done!")
+	info, err := Load()
+	if err != nil {
+		panic(err)
 	}
+
+	fmt.Println(info)
+
+	err = Save(info.lessonId+1, info.checkpointID+1)
+	if err != nil {
+		panic(err)
+	}
+
+	info, err = Load()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(info)
+
 }
