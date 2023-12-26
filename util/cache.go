@@ -1,7 +1,8 @@
-package main
+package util
 
 import (
 	"encoding/binary"
+	"errors"
 	"os"
 	"time"
 )
@@ -12,19 +13,23 @@ import (
 // next byte     - checkpoint id  uint8
 
 type Information struct {
-	time         int64
-	lessonId     uint8
-	checkpointID uint8
+	Time         int64
+	LessonId     uint8
+	CheckpointID uint8
 }
 
 var fileName = UserHomeDir() + string(os.PathSeparator) + ".csclub_activities"
+
+const NoOngoingActivity uint8 = 0
+
+var ErrReservedIDs = errors.New("reserved lessonID or checkpointID value: cannot be 0")
 
 func openCache() (*os.File, error) {
 	// 0666 -> r/w for all users
 	return os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, 0666)
 }
 
-func Save(lessonID uint8, checkpointID uint8) error {
+func save(lessonID uint8, checkpointID uint8) error {
 	file, err := openCache()
 	if err != nil {
 		return err
@@ -36,8 +41,18 @@ func Save(lessonID uint8, checkpointID uint8) error {
 	b[8] = lessonID
 	b[9] = checkpointID
 	_, err = file.Write(b)
-
 	return err
+}
+
+func Save(lessonID uint8, checkpointID uint8) error {
+	if lessonID == NoOngoingActivity || checkpointID == NoOngoingActivity {
+		return ErrReservedIDs
+	}
+	return save(lessonID, checkpointID)
+}
+
+func NewSave() error {
+	return save(0, 0)
 }
 
 func Load() (*Information, error) {
@@ -52,8 +67,8 @@ func Load() (*Information, error) {
 		return &Information{}, err
 	}
 	return &Information{
-		time:         int64(binary.LittleEndian.Uint64(b[:8])),
-		lessonId:     b[8],
-		checkpointID: b[9],
+		Time:         int64(binary.LittleEndian.Uint64(b[:8])),
+		LessonId:     b[8],
+		CheckpointID: b[9],
 	}, nil
 }

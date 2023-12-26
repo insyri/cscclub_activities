@@ -1,6 +1,6 @@
 package lesson
 
-import "time"
+import "errors"
 
 /*
 save checkpoint
@@ -13,18 +13,34 @@ metadata:
 
 */
 
+var Master master
+
+type master struct {
+	Lessons []Lesson
+}
+
+func (m *master) append(newLesson *Lesson) error {
+	for i := range m.Lessons {
+		if m.Lessons[i].Id == newLesson.Id {
+			// here for future contributors
+			return errors.New("duplicate lesson ids")
+		}
+	}
+	m.Lessons = append(m.Lessons, *newLesson)
+	return nil
+}
+
 type Lesson struct {
-	id            uint8
-	name          string
-	author        string
-	datePublished time.Time
-	description   string
-	checkpoints   []Checkpoint
+	Id          uint8
+	Author      string
+	Name        string
+	Description string
+	Checkpoints []Checkpoint
 }
 
 type Checkpoint struct {
-	preCondition func() bool // precondition could be previous checkpoint condition
-	condition    func() bool
-	action       func()
-	position     uint8
+	PreCondition func() bool // precondition could be previous checkpoint condition
+	Condition    func() bool
+	Action       func()
+	Position     uint8
 }
