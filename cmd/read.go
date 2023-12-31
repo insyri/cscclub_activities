@@ -7,22 +7,22 @@ import (
 )
 
 func init() {
-	readCmd.Hidden = true
 	rootCmd.AddCommand(readCmd)
 }
 
 var readCmd = &cobra.Command{
 	Use:   "read",
 	Short: "Clears the lesson checkpoint",
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		info, err := util.Load()
 		if err != nil {
-			util.LogErrorAndExit(err)
+			return err
 		}
 
 		fmt.Printf(
 			"Timestamp: %d\n"+
 				"LessonID:  %d\n"+
 				"CheckptID:  %d\n", info.Time, info.LessonId, info.CheckpointID)
+		return nil
 	},
 }

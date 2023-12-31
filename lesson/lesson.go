@@ -1,6 +1,10 @@
 package lesson
 
-import "errors"
+import (
+	"csclub-activities/util"
+	"fmt"
+	"github.com/fatih/color"
+)
 
 /*
 save checkpoint
@@ -13,25 +17,45 @@ metadata:
 
 */
 
+func init() {
+	// Empty first struct to support the NoOngoingActivity functionality
+	l := []*Lesson{{}, lessonOne, lessonTwo}
+	for x := range l {
+		Master.Lessons = append(Master.Lessons, *l[x])
+	}
+}
+
 var Master master
 
 type master struct {
 	Lessons []Lesson
 }
 
-func (m *master) append(newLesson *Lesson) error {
-	for i := range m.Lessons {
-		if m.Lessons[i].Id == newLesson.Id {
-			// here for future contributors
-			return errors.New("duplicate lesson ids")
-		}
+func (m *master) Run(lesson int, checkpoint int) error {
+
+	if m.Lessons == nil ||
+		lesson >= len(m.Lessons) {
+		return util.NonexistentLesson
 	}
-	m.Lessons = append(m.Lessons, *newLesson)
+
+	if m.Lessons[lesson].Checkpoints == nil ||
+		checkpoint >= len(m.Lessons[lesson].Checkpoints) {
+		return util.NonexistentCheckpoint
+	}
+
+	for i := checkpoint; i < len(m.Lessons[lesson].Checkpoints); i++ {
+
+		cp := m.Lessons[lesson].Checkpoints[i]
+		fmt.Printf("%-5s  %s\n\n",
+			color.New(color.Bold).Add(color.FgGreen).Sprintf("%-2d/%-2d", i, len(m.Lessons)),
+			color.New(color.Bold).Sprintf("%s", cp.Title),
+		)
+		cp.Action(uint8(lesson), uint8(checkpoint))
+	}
 	return nil
 }
 
 type Lesson struct {
-	Id          uint8
 	Author      string
 	Name        string
 	Description string
@@ -39,8 +63,14 @@ type Lesson struct {
 }
 
 type Checkpoint struct {
-	PreCondition func() bool // precondition could be previous checkpoint condition
-	Condition    func() bool
-	Action       func()
-	Position     uint8
+	Title  string
+	Action func(lessonID uint8, checkpointID uint8)
+	// What is the condition that allows the user to go onto the next checkpoint?
+	ShouldPromote  func() bool
+	ExpectedErrors []ExpectantError
+}
+
+type ExpectantError struct {
+	MatchesError func() bool
+	Feedback     string
 }

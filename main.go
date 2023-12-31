@@ -1,25 +1,27 @@
 package main
 
-import "csclub-activities/cmd"
+import (
+	"csclub-activities/cmd"
+	"csclub-activities/lesson"
+	"csclub-activities/util"
+)
 
 func main() {
 
-	cmd.Execute()
+	// util.Load could return an empty or new information struct.
+	// new does not help us.
 
-	// Check if a checkpoint is active
-	//info, err := Load()
-	//if err != nil {
-	//	if errors.Is(err, io.EOF) {
-	//		err = NewSave()
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//	} else {
-	//		panic(err)
-	//	}
-	//}
+	information, err := util.Load()
+	if err != nil {
+		util.LogErrorAndExit(err)
+	}
 
-	// LF checkpoint
+	err = lesson.Master.Run(int(information.LessonId), int(information.CheckpointID))
+	if err != nil {
+		util.LogErrorAndExit(err)
+	} else {
+		cmd.Execute()
+	}
 
 	// commands during lesson
 	// stop -> clears checkpoint

@@ -15,11 +15,12 @@ var stopCmd = &cobra.Command{
 	Use:     "stop",
 	Short:   "Clears the lesson checkpoint",
 	Aliases: []string{"clear", "new"},
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		err := util.NewSave()
 		if err != nil {
-			util.LogErrorAndExit(err)
+			return err
 		}
 		fmt.Println("Checkpoint cleared")
+		return nil
 	},
 }

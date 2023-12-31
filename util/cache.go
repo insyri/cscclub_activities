@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/binary"
-	"errors"
 	"os"
 	"time"
 )
@@ -21,8 +20,6 @@ type Information struct {
 var fileName = UserHomeDir() + string(os.PathSeparator) + ".csclub_activities"
 
 const NoOngoingActivity uint8 = 0
-
-var ErrReservedIDs = errors.New("reserved lessonID or checkpointID value: cannot be 0")
 
 func openCache() (*os.File, error) {
 	// 0666 -> r/w for all users

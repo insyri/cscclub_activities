@@ -3,7 +3,6 @@ package cmd
 import (
 	"csclub-activities/util"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var rootCmd = &cobra.Command{
@@ -20,7 +19,5 @@ func Execute() {
 		// https://github.com/fatih/color?tab=readme-ov-file#disableenable-colorx
 
 		util.LogErrorAndExit(err)
-
-		os.Exit(1)
 	}
 }
