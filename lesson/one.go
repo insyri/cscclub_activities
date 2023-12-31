@@ -1,11 +1,9 @@
 package lesson
 
 import (
-	"csclub-activities/util"
 	"fmt"
 	"github.com/mitchellh/go-wordwrap"
 	"os"
-	"runtime"
 )
 
 var lessonOne = &Lesson{
@@ -15,37 +13,31 @@ var lessonOne = &Lesson{
 	Checkpoints: []Checkpoint{
 		{
 			Title: "Getting Started",
-			Action: func(lessonID uint8, checkpointID uint8) {
-				defer func() {
-					err := util.Save(lessonID, checkpointID)
-					if err != nil {
-						util.LogErrorAndExit(err)
-					}
-				}()
+			Action: func() {
+				printPrompts([]string{
+					"Welcome to the activities program! This program was designed to interactively learn computer" +
+						" science concepts through the terminal, as well as learning about the terminal itself! This" +
+						" activity will go over basic Linux-based terminal concepts.",
 
-				// TODO: find or develop a word wrapper.
+					"To do that, we'll first need to ensure that you're running a shell-based command-line interpreter.",
 
-				fmt.Println(wordwrap.WrapString(
-					"Welcome to the activities program! This program was designed to interactively learn concepts"+
-						" within the terminal, as well as learning the terminal! To get started, first we'll learn basic"+
-						" Linux-based terminal concepts through the shell program.", util.WordWrapLimit))
+					"Windows users should consider installing a version of MSYS2; the easiest way to get started" +
+						" with this is to use the Git Bash program from the GitForWindows bundle, which installs" +
+						" a version of MSYS2 which comes with an alternate terminal program (Git Bash) and Git" +
+						" preinstalled:\nhttps://git-scm.com/download/win",
 
-				fmt.Println("\nFirst, we'll ensure that you're running a shell-based command-line interpreter.")
-				if runtime.GOOS == "windows" {
-					fmt.Println(wordwrap.WrapString(
-						"\nWindows users should consider installing a version of MSYS2, the easiest way to get started"+
-							" with this is to use the Git Bash program from GitForWindows:\n"+
-							"https://git-scm.com/download/win", util.WordWrapLimit))
-					fmt.Println()
-				}
-				fmt.Println(wordwrap.WrapString(
-					"If you are running a non-windows based operating system, chances are that Git is already"+
-						" installed; to verify, enter \"git\" into your shell and you should see a lengthy dialog.",
-					util.WordWrapLimit))
-				fmt.Println()
-				fmt.Println(
-					"After installing Git, or to move on to the next checkpoint, simply re-run this program: `csa`")
+					"If you are running a non-windows based operating system, chances are that you are already using" +
+						" a shell-based command-line interpreter.",
 
+					"To move on to the next checkpoint, simply re-run this program: `csa`",
+
+					"If you come back to the same checkpoint, it means that you haven't met the conditions to move" +
+						" on to the next checkpoint. Ensure that you:",
+
+					"    1. Have a version of Bash installed on your system\n" +
+						"    2. Are running and using Bash at this moment" +
+						"    3. Are executing this program (csa) within Bash",
+				})
 			},
 			ShouldPromote: func() bool {
 				switch os.Getenv("SHELL") {
@@ -54,6 +46,13 @@ var lessonOne = &Lesson{
 				}
 				// for those who run other shells like fish, you could just use the env VALIDSHELL
 				return os.Getenv("VALIDSHELL") != ""
+			},
+		},
+		{
+			Title: "Introduction to the Terminal",
+			Action: func() {
+				fmt.Println(wordwrap.WrapString(
+					"Awesome! If you got here, you're properly set up.", WordWrapLimit))
 			},
 		},
 	},

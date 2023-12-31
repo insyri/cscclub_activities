@@ -15,9 +15,6 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 	if err := rootCmd.Execute(); err != nil {
-		// The color package also disables color output if the NO_COLOR environment variable is set to a non-empty string.
-		// https://github.com/fatih/color?tab=readme-ov-file#disableenable-colorx
-
 		util.LogErrorAndExit(err)
 	}
 }

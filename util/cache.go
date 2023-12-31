@@ -42,7 +42,7 @@ func save(lessonID uint8, checkpointID uint8) error {
 }
 
 func Save(lessonID uint8, checkpointID uint8) error {
-	if lessonID == NoOngoingActivity || checkpointID == NoOngoingActivity {
+	if lessonID == NoOngoingActivity {
 		return ErrReservedIDs
 	}
 	return save(lessonID, checkpointID)

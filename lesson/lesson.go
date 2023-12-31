@@ -4,18 +4,10 @@ import (
 	"csclub-activities/util"
 	"fmt"
 	"github.com/fatih/color"
+	"github.com/mitchellh/go-wordwrap"
 )
 
-/*
-save checkpoint
-check checkpoint (specific lesson)
-
-metadata:
-	name
-	amount of steps
-	description
-
-*/
+const WordWrapLimit = 100
 
 func init() {
 	// Empty first struct to support the NoOngoingActivity functionality
@@ -43,14 +35,29 @@ func (m *master) Run(lesson int, checkpoint int) error {
 		return util.NonexistentCheckpoint
 	}
 
-	for i := checkpoint; i < len(m.Lessons[lesson].Checkpoints); i++ {
+	cps := m.Lessons[lesson].Checkpoints
+	// TODO: remove this for loop for a single run conditional statement
+	for i := checkpoint; i < len(cps); i++ {
+		if cps[i].ShouldPromote() {
+			if i+1 < len(cps) {
+				break
+			}
+			i++
+			continue
+		}
 
-		cp := m.Lessons[lesson].Checkpoints[i]
 		fmt.Printf("%-5s  %s\n\n",
-			color.New(color.Bold).Add(color.FgGreen).Sprintf("%-2d/%-2d", i, len(m.Lessons)),
-			color.New(color.Bold).Sprintf("%s", cp.Title),
+			color.New(color.Bold).Add(color.FgGreen).Sprintf("%2d/%-2d", i+1, len(cps)),
+			color.New(color.Bold).Sprintf("%s", cps[i].Title),
 		)
-		cp.Action(uint8(lesson), uint8(checkpoint))
+		cps[i].Action()
+		fmt.Println("\n    Note: to get back to the help screen, run: `csa help`")
+
+		err := util.Save(uint8(lesson), uint8(checkpoint))
+		if err != nil {
+			return err
+		}
+		break
 	}
 	return nil
 }
@@ -64,7 +71,7 @@ type Lesson struct {
 
 type Checkpoint struct {
 	Title  string
-	Action func(lessonID uint8, checkpointID uint8)
+	Action func()
 	// What is the condition that allows the user to go onto the next checkpoint?
 	ShouldPromote  func() bool
 	ExpectedErrors []ExpectantError
@@ -73,4 +80,15 @@ type Checkpoint struct {
 type ExpectantError struct {
 	MatchesError func() bool
 	Feedback     string
+}
+
+func printPrompts(prompts []string) {
+	for x := range prompts {
+		if x == 0 {
+			fmt.Println(wordwrap.WrapString(prompts[x], WordWrapLimit))
+		} else {
+			fmt.Println("\n" + wordwrap.WrapString(prompts[x], WordWrapLimit))
+		}
+	}
+
 }
