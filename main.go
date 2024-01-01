@@ -36,7 +36,7 @@ func main() {
 		return
 	}
 
-	err = lesson.Master.Run(int(information.LessonId), int(information.CheckpointID))
+	err = lesson.Master.Run(int(information.LessonId), int(information.CheckpointID), false)
 	if err != nil {
 		util.LogErrorAndExit(err)
 	}

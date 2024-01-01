@@ -45,7 +45,7 @@ var lessonCmd = &cobra.Command{
 			if n > len(lesson.Master.Lessons) || n == 0 {
 				util.LogErrorAndExit(util.NonexistentLesson)
 			}
-			err = lesson.Master.Run(n, 0)
+			err = lesson.Master.Run(n, 0, true)
 			if err != nil {
 				util.LogErrorAndExit(err)
 			}

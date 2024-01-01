@@ -27,3 +27,7 @@ func LogErrorAndExit(err error) {
 	_, _ = c.Printf("Error: %v\n", err)
 	os.Exit(1)
 }
+
+func HasNext[T any](position int, set []T) bool {
+	return position+1 < len(set)
+}

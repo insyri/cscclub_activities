@@ -1,9 +1,12 @@
 package lesson
 
 import (
+	"csclub-activities/util"
 	"fmt"
 	"github.com/mitchellh/go-wordwrap"
 	"os"
+	"regexp"
+	"runtime"
 )
 
 var lessonOne = &Lesson{
@@ -34,18 +37,24 @@ var lessonOne = &Lesson{
 					"If you come back to the same checkpoint, it means that you haven't met the conditions to move" +
 						" on to the next checkpoint. Ensure that you:",
 
-					"    1. Have a version of Bash installed on your system\n" +
-						"    2. Are running and using Bash at this moment" +
-						"    3. Are executing this program (csa) within Bash",
+					orderedList([]string{
+						"Have a version of Bash installed on your system",
+						"Are running and using Bash at this moment",
+						"[and] Are executing this program (csa) within Bash",
+					}),
+
+					conditional(runtime.GOOS != "windows",
+						"If you are having trouble with this step because you are running a custom shell"+
+							" (ex. fish), consider populating the `VALIDSHELL` environment variable before running csa again."),
 				})
 			},
 			ShouldPromote: func() bool {
-				switch os.Getenv("SHELL") {
-				case "/usr/bin/bash", "/usr/bin/zsh", "/usr/bin/sh":
-					return true
+				matched, err := regexp.MatchString(`usr([/\\])bin([/\\])(ba|z|)sh`, os.Getenv("SHELL"))
+				if err != nil {
+					util.LogErrorAndExit(err)
 				}
 				// for those who run other shells like fish, you could just use the env VALIDSHELL
-				return os.Getenv("VALIDSHELL") != ""
+				return matched || os.Getenv("VALIDSHELL") != ""
 			},
 		},
 		{
